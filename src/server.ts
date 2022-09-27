@@ -5,6 +5,9 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import sanitizedConfig from './utils/config/config';
 import db from './utils/db';
+import mongoose from 'mongoose';
+import { logEvents, logger } from './middleware/logger';
+import { errorHandler } from './middleware/error';
 
 dotenv.config();
 
@@ -20,10 +23,30 @@ app.use(
   })
 );
 
-app.use(morgan('dev'));
+if (sanitizedConfig.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
+
+app.use(logger);
+app.use(errorHandler);
 
 const PORT = sanitizedConfig.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`⚡️[server]: Server is running at https://localhost:${PORT}`);
+// running the express server success
+mongoose.connection.once('open', () => {
+  console.log('Connected to MongoDB');
+  app.listen(PORT, () =>
+    console.log(
+      `🟢 Server running in ${process.env.NODE_ENV} mode on port ${PORT}`
+    )
+  );
+});
+
+// running the express server fail
+mongoose.connection.on('error', (err) => {
+  console.log(err);
+  logEvents(
+    `${err.no}: ${err.code}\t${err.syscall}\t${err.hostname}`,
+    'mongoErrLog.log'
+  );
 });
