@@ -1,10 +1,10 @@
 <div align="center">
 
-  <img src="https://s3.ap-south-1.amazonaws.com/afteracademy-server-uploads/getting-started-with-expressjs-banner-96ecb31ec64b6504.jpeg" alt="logo" width="200" height="auto" />
-  <h1>Hicm express starting server </h1>
+  <img src="https://miro.medium.com/max/1400/1*jnuiws9u0XvNyzgheYeH7w.png" alt="logo" width="200" height="auto" />
+  <h1>Hicm express typescrit starting server </h1>
   
   <p>
-    The best express boilerplate 
+    The best express typescrit boilerplate 
   </p>
   
   
@@ -17,7 +17,7 @@
 <details>
   <summary>Server</summary>
   <ul>
-   <li><a href="https://www.javascript.com/">Typescrit</a></li>
+   <li><a href="https://www.typescrit.com/">Typescrit</a></li>
     <li><a href="https://nodejs.org/en/">Node.js</a></li>
     <li><a href="https://expressjs.com/">Express.js</a></li>
   </ul>

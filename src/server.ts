@@ -8,8 +8,12 @@ import db from './utils/db';
 import mongoose from 'mongoose';
 import { logEvents, logger } from './middleware/logger';
 import { errorHandler } from './middleware/error';
+import authRoutes from './routes/auth';
+import path from 'path';
 
-dotenv.config();
+dotenv.config({
+  path: path.resolve(__dirname, '/.env'),
+});
 
 db();
 const app: Express = express();
@@ -27,6 +31,26 @@ if (sanitizedConfig.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
+//routes
+app.use('/api/auth', authRoutes);
+
+// default view templet
+app.get('/', (req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, 'views', 'index.html'));
+});
+
+// default error templet
+app.all('*', (req: Request, res: Response) => {
+  res.status(404);
+  if (req.accepts('html')) {
+    res.sendFile(path.join(__dirname, 'views', '404.html'));
+  } else if (req.accepts('json')) {
+    res.json({ message: '404 Not Found' });
+  } else {
+    res.type('txt').send('404 Not Found');
+  }
+});
+
 app.use(logger);
 app.use(errorHandler);
 
@@ -37,7 +61,7 @@ mongoose.connection.once('open', () => {
   console.log('Connected to MongoDB');
   app.listen(PORT, () =>
     console.log(
-      `🟢 Server running in ${process.env.NODE_ENV} mode on port ${PORT}`
+      `🟢 Server running in ${sanitizedConfig.NODE_ENV} mode on port ${PORT}`
     )
   );
 });
