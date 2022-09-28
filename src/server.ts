@@ -11,13 +11,14 @@ import { errorHandler } from './middleware/error';
 import authRoutes from './routes/auth';
 import path from 'path';
 
+//access .env file
 dotenv.config({
   path: path.resolve(__dirname, '/.env'),
 });
-
-db();
 const app: Express = express();
+db();
 
+//enable middlewares
 app.use(express.json());
 app.use(cookieParser());
 app.use(
@@ -51,6 +52,7 @@ app.all('*', (req: Request, res: Response) => {
   }
 });
 
+//costom middlewares
 app.use(logger);
 app.use(errorHandler);
 
