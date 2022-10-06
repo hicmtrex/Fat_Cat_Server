@@ -12,17 +12,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose_1 = __importDefault(require("mongoose"));
-const config_1 = __importDefault(require("./config/config"));
-//connect to database (mongodb using ORM mongoose)
-const db = () => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const connection = yield mongoose_1.default.connect(config_1.default.MONGO_URI);
-        console.log(`🟢 Mongo db connected:`, connection.connection.host);
+exports.allUsers = void 0;
+const express_async_handler_1 = __importDefault(require("express-async-handler"));
+const user_1 = __importDefault(require("../models/user"));
+exports.allUsers = (0, express_async_handler_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { search } = req.query;
+    const keyword = search
+        ? {
+            $or: [
+                { name: { $regex: search, $options: 'i' } },
+                { email: { $regex: search, $options: 'i' } },
+            ],
+        }
+        : {};
+    const users = yield user_1.default.find(keyword)
+        .find({ _id: { $ne: req.user._id } })
+        .select('-password');
+    if (users) {
+        res.status(200).json(users);
     }
-    catch (error) {
-        console.log(error);
-        process.exit(1);
-    }
-});
-exports.default = db;
+}));
