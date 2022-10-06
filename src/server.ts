@@ -9,13 +9,19 @@ import mongoose from 'mongoose';
 import { logEvents, logger } from './middleware/logger';
 import { errorHandler } from './middleware/error';
 import authRoutes from './routes/auth';
+import messageRoutes from './routes/message';
+import chatRoutes from './routes/chat';
+import userRoutes from './routes/user';
 import path from 'path';
+import { Server, Socket } from 'socket.io';
+import http from 'http';
 
 //access .env file
 dotenv.config({
   path: path.resolve(__dirname, '/.env'),
 });
 const app: Express = express();
+const server = http.createServer(app);
 db();
 
 //enable middlewares
@@ -23,7 +29,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ['http://localhost:3000'],
+    origin: [sanitizedConfig.FRONT_URL],
     credentials: true,
   })
 );
@@ -34,6 +40,9 @@ if (sanitizedConfig.NODE_ENV === 'development') {
 
 //routes
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/message', messageRoutes);
+app.use('/api/chat', chatRoutes);
 
 // default view templet
 app.get('/', (req: Request, res: Response) => {
@@ -61,7 +70,7 @@ const PORT = sanitizedConfig.PORT || 5000;
 // running the express server success
 mongoose.connection.once('open', () => {
   console.log('Connected to MongoDB');
-  app.listen(PORT, () =>
+  server.listen(PORT, () =>
     console.log(
       `🟢 Server running in ${sanitizedConfig.NODE_ENV} mode on port ${PORT}`
     )
@@ -75,4 +84,50 @@ mongoose.connection.on('error', (err) => {
     `${err.no}: ${err.code}\t${err.syscall}\t${err.hostname}`,
     'mongoErrLog.log'
   );
+});
+
+const io = new Server(server, {
+  pingTimeout: 60000,
+  cors: {
+    origin: [sanitizedConfig.FRONT_URL],
+    credentials: true,
+  },
+});
+
+//realtime data with socket io
+io.on('connection', (socket: Socket) => {
+  console.log('🟢 Connected to socket.io');
+  //join room
+
+  socket.on('setup', (userData) => {
+    socket.join(userData._id);
+    socket.emit('🟢 connected');
+  });
+
+  //join chat
+  socket.on('join chat', (room) => {
+    socket.join(room);
+    console.log('👤 User Joined Room: ' + room);
+  });
+
+  socket.on('typing', (room) => socket.in(room).emit('typing'));
+  socket.on('stop typing', (room) => socket.in(room).emit('stop typing'));
+
+  //send new message
+  socket.on('new message', (newMessageRecieved) => {
+    var chat = newMessageRecieved.chat;
+
+    if (!chat.users) return console.log('chat.users not defined');
+
+    chat.users.forEach((user: any) => {
+      if (user._id == newMessageRecieved.sender._id) return;
+      // recived message
+      socket.in(user._id).emit('message recieved', newMessageRecieved);
+    });
+  });
+
+  socket.off('setup', (userData) => {
+    console.log('🔴 USER DISCONNECTED');
+    socket.leave(userData._id);
+  });
 });

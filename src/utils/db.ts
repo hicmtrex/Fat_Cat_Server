@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import sanitizedConfig from './config/config';
 
+//connect to database (mongodb using ORM mongoose)
 const db = async () => {
   try {
     const connection = await mongoose.connect(sanitizedConfig.MONGO_URI);

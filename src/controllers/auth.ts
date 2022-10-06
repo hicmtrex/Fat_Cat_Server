@@ -12,7 +12,7 @@ import { DataStoredInToken } from '../utils/interfaces/user.interface';
 // @access  Public
 export const userRegister = asyncHandler(
   async (req: Request, res: Response) => {
-    const { username, email, password } = req.body;
+    const { name, email, image, password } = req.body;
 
     const exist = await User.findOne({ email });
 
@@ -21,13 +21,14 @@ export const userRegister = asyncHandler(
       throw new Error('email already been used!');
     }
 
-    const user = await User.create({ username, email, password });
+    const user = await User.create({ name, image, email, password });
 
     if (user) {
       const userInfo = {
         _id: user._id,
-        username: user.username,
+        name: user.name,
         email: user.email,
+        image: user.image,
         role: user.role,
       };
 
@@ -71,8 +72,9 @@ export const userLogin = asyncHandler(async (req: Request, res: Response) => {
     if (match) {
       const userInfo = {
         _id: user._id,
-        username: user.username,
+        name: user.name,
         email: user.email,
+        image: user.image,
         role: user.role,
       };
 
@@ -155,7 +157,8 @@ export const refreshToken = asyncHandler(
       token: accessToken,
       user: {
         _id: user._id,
-        username: user.username,
+        name: user.name,
+        image: user.image,
         email: user.email,
         role: user.role,
       },

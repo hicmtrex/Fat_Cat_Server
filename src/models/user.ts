@@ -3,18 +3,24 @@ import bcrypt from 'bcryptjs';
 
 export interface IUser {
   _id: string;
-  username: string;
+  name: string;
   email: string;
   password: string;
   role: string;
+  image: string;
 }
 
 const userSchema = new Schema<IUser>(
   {
-    username: { type: String, required: true },
+    name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: { type: String, required: true, default: 'Client' },
+    image: {
+      type: String,
+      default:
+        'https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg',
+    },
   },
   {
     timestamps: true,

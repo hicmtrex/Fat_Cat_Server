@@ -14,6 +14,7 @@ interface ENV {
   ACCESS_TOKEN_SECRET: string | undefined;
   REFRESH_TOKEN_SECRET: string | undefined;
   MONGO_URI: string | undefined;
+  FRONT_URL: string | undefined;
 }
 
 interface Config {
@@ -22,6 +23,7 @@ interface Config {
   ACCESS_TOKEN_SECRET: string;
   REFRESH_TOKEN_SECRET: string;
   MONGO_URI: string;
+  FRONT_URL: string;
 }
 
 // Loading process.env as ENV interface
@@ -33,6 +35,7 @@ const getConfig = (): ENV => {
     ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET,
     REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET,
     MONGO_URI: process.env.MONGO_URI,
+    FRONT_URL: process.env.FRONT_URL,
   };
 };
 
