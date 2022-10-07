@@ -68,23 +68,12 @@ app.use(errorHandler);
 const PORT = sanitizedConfig.PORT || 5000;
 
 // running the express server success
-mongoose.connection.once('open', () => {
-  console.log('Connected to MongoDB');
-  server.listen(PORT, () =>
-    console.log(
-      `🟢 Server running in ${sanitizedConfig.NODE_ENV} mode on port ${PORT}`
-    )
-  );
-});
 
-// running the express server fail
-mongoose.connection.on('error', (err) => {
-  console.log(err);
-  logEvents(
-    `${err.no}: ${err.code}\t${err.syscall}\t${err.hostname}`,
-    'mongoErrLog.log'
-  );
-});
+server.listen(PORT, () =>
+  console.log(
+    `🟢 Server running in ${sanitizedConfig.NODE_ENV} mode on port ${PORT}`
+  )
+);
 
 const io = new Server(server, {
   pingTimeout: 60000,
@@ -115,7 +104,7 @@ io.on('connection', (socket: Socket) => {
 
   //send new message
   socket.on('new message', (newMessageRecieved) => {
-    var chat = newMessageRecieved.chat;
+    let chat = newMessageRecieved.chat;
 
     if (!chat.users) return console.log('chat.users not defined');
 
