@@ -77,7 +77,12 @@
 
 To run this project, you will need to add the following environment variables to your .env file
 
-`VITE_API_URL`
+`PORT`
+`ACCESS_TOKEN_SECRET`
+`REFRESH_TOKEN_SECRET`
+`FRONT_URL`
+`MONGO_URI`
+`NODE_ENV`
 
 <!-- Getting Started -->
 
