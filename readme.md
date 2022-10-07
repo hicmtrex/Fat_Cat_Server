@@ -121,7 +121,7 @@ To run tests, run the following command
 Clone the project
 
 ```bash
-  git clone https://github.com/hicmtrex/Fat_Cat_Front
+  git clone https://github.com/hicmtrex/Fat_Cat_Server.git
 ```
 
 Go to the project directory
